@@ -1,5 +1,8 @@
 from app.services.feature_builder import build_features
-from app.services.model_loader import models
+from app.services.model_loader import (
+    get_model,
+    VALID_MODEL_TYPES
+)
 from app.services.shap_service import get_top_factors
 
 from app.rag.retriever import retrieve_context
@@ -31,7 +34,7 @@ def predict_patient(data):
 
     # ---------------- VALIDATE MODEL ----------------
 
-    if data.model_type not in models:
+    if data.model_type not in VALID_MODEL_TYPES:
         raise ValueError(
             "Invalid model_type"
         )
@@ -44,7 +47,7 @@ def predict_patient(data):
 
     # ---------------- MODEL SELECTION ----------------
 
-    model = models[data.model_type]
+    model = get_model(data.model_type)
 
     # ---------------- PREDICTION ----------------
 

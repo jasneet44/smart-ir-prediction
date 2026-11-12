@@ -1,13 +1,26 @@
+import threading
+
 import shap
 
-from app.services.model_loader import models
+from app.services.model_loader import (
+    get_model,
+    VALID_MODEL_TYPES
+)
 
 
-# Create explainers once at startup
-explainers = {
-    name: shap.TreeExplainer(model)
-    for name, model in models.items()
-}
+_explainers = {}
+_lock = threading.Lock()
+
+
+def _get_explainer(model_type):
+    if model_type not in _explainers:
+        with _lock:
+            if model_type not in _explainers:
+                _explainers[model_type] = shap.TreeExplainer(
+                    get_model(model_type)
+                )
+
+    return _explainers[model_type]
 
 
 def get_top_factors(
@@ -17,7 +30,10 @@ def get_top_factors(
     top_n=5
 ):
 
-    explainer = explainers[model_type]
+    if model_type not in VALID_MODEL_TYPES:
+        raise ValueError("Invalid model_type")
+
+    explainer = _get_explainer(model_type)
 
     shap_values = explainer(features)
 
