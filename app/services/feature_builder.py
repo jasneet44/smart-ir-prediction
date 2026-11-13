@@ -35,13 +35,20 @@ def build_features(data: PatientData):
             raise ValueError("Triglycerides required")
 
 
+        tyg = float(
+            np.log(
+                (data.Triglycerides * data.Glucose) / 2
+            )
+        )
+
         feature_names = [
             "Age",
             "Sex",
             "BMI",
             "Waist",
             "Glucose",
-            "Triglycerides"
+            "Triglycerides",
+            "TyG"
         ]
 
         features = np.array([
@@ -51,7 +58,8 @@ def build_features(data: PatientData):
                 data.BMI,
                 data.Waist,
                 data.Glucose,
-                data.Triglycerides
+                data.Triglycerides,
+                tyg
             ]
         ])
 
@@ -69,8 +77,20 @@ def build_features(data: PatientData):
         if data.HDL == 0:
             raise ValueError("HDL cannot be zero")
 
+        if data.Systolic_BP is None:
+            raise ValueError("Systolic_BP required")
+
+        if data.Diastolic_BP is None:
+            raise ValueError("Diastolic_BP required")
 
 
+
+
+        tyg = float(
+            np.log(
+                (data.Triglycerides * data.Glucose) / 2
+            )
+        )
 
         feature_names = [
             "Age",
@@ -79,6 +99,7 @@ def build_features(data: PatientData):
             "Waist",
             "Glucose",
             "Triglycerides",
+            "TyG",
             "HDL",
             "Systolic_BP",
             "Diastolic_BP"
@@ -92,6 +113,7 @@ def build_features(data: PatientData):
                 data.Waist,
                 data.Glucose,
                 data.Triglycerides,
+                tyg,
                 data.HDL,
                 data.Systolic_BP,
                 data.Diastolic_BP
